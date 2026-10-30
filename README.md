@@ -6,6 +6,22 @@ device (FutureProofHomes Satellite1, ReSpeaker HATs, Jabra Speak 410, ...).
 
 Status: work in progress. See [docs/plan.md](docs/plan.md).
 
+## Documentation
+
+- [docs/code-structure.md](docs/code-structure.md) – layout and where to change what
+- [docs/architecture.md](docs/architecture.md) – components and data flow
+- [docs/behavior.md](docs/behavior.md) – LED states, buttons, entities
+- [docs/api/](docs/api) – LVA, MQTT and Unix-socket interfaces
+- [docs/plan.md](docs/plan.md) – roadmap
+
+## Development
+
+```
+python3.11 -m venv .venv && . .venv/bin/activate
+pip install -e '.[daemon,dev]'   # needs build tools for spidev/evdev
+pytest && ruff check src tests
+```
+
 ## License
 
 GPL-3.0, see [LICENSE](LICENSE), [NOTICE.md](NOTICE.md) and [docs/licensing.md](docs/licensing.md).
