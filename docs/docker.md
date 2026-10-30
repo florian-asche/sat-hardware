@@ -1,7 +1,7 @@
 # Docker
 
 The agent runs as a container next to the Linux Voice Assistant. Image:
-`ghcr.io/florian-asche/sat-hardware-agent` (pushed by the GitLab pipeline to the project's container registry; or build locally).
+`ghcr.io/florian-asche/sat-hardware-agent` (pushed to GHCR by GitHub Actions; or build locally).
 The Debian package (see `debian/`) remains available and uses the same configuration format.
 
 > **Only one process may own the Satellite1 hardware (XMOS/I2C).** Stop the Debian service
@@ -64,7 +64,7 @@ Everything the container needs (venv wheelhouse, `sat-hardware-agent-entrypoint`
 `/etc/satellite1.conf`, udev rules) is shipped inside the package. So the container, the Raspberry
 Pi install and the release artifact are the same thing.
 
-Two steps, mirrored by the GitLab pipeline (`.gitlab-ci.yml`):
+Two steps, mirrored by the GitHub Actions workflow (`.github/workflows/build.yml`):
 
 ```
 # 1. build the package for the local architecture into dist/ (runs in debian:trixie)
@@ -80,15 +80,18 @@ UID/GID 1000; systemd/udev steps of the postinst are skipped because they do not
 Healthcheck: connect to the control socket. The OCI source label (`org.opencontainers.image.source`)
 points to this repository, which is the GPL source offer.
 
-## GitLab pipeline
+## GitHub Actions workflow
 
-`.gitlab-ci.yml` has three stages: `build-deb` (per architecture, artifact `dist/*.deb`), `docker`
-(`needs` the matching `.deb` artifact and builds/pushes `$CI_REGISTRY_IMAGE:<ref>-<arch>`) and
-`manifest` (multi-arch tag, plus `latest` on git tags). Native runners per architecture are
-required; set `AMD64_TAG` / `ARM64_TAG` for self-hosted runners (defaults: GitLab.com SaaS runners).
+`.github/workflows/build.yml` has three jobs: `build-deb` (matrix amd64 on `ubuntu-24.04`, arm64 on
+the native `ubuntu-24.04-arm` runner, runs `script/build-deb` in `debian:trixie`, uploads
+`deb-<arch>`), `image` (downloads the matching `.deb` into `dist/`, builds the image, smoke-tests
+`sat-hardware-agent --help` / `sat1 --help`) and `manifest` (multi-arch tag). Images go to
+`ghcr.io/<owner>/sat-hardware-agent` on pushes to `main` (tag `main`) and on `v*` tags (tag `vX.Y.Z`
+and `latest`); pull requests build and test but do not push. No extra secrets: `GITHUB_TOKEN` with
+`packages: write`.
 
 ## Limitations
 
 - Built and smoke-tested on amd64 (package builds with `script/build-deb`, installs in the image, CLI works, fails cleanly without GPIO hardware). Running
-  on a Raspberry Pi with a Satellite1 HAT is **not verified yet**; multi-arch (arm64) builds are done by the GitLab pipeline. The pipeline file itself has not run on a GitLab instance yet (only validated as YAML; its steps were reproduced locally).
+  on a Raspberry Pi with a Satellite1 HAT is **not verified yet**; multi-arch (arm64) builds are done by the GitHub Actions workflow. The workflow has not run yet (only validated as YAML; its steps were reproduced locally); the repository may need Actions package permissions for GHCR.
 - Firmware flashing from the container needs `flashrom` access to the same SPI device; untested.
