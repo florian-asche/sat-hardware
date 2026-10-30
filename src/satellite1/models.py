@@ -1,0 +1,128 @@
+"""Values returned by the public Satellite1 daemon client."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Literal, TypeAlias
+
+AudioChangeSource: TypeAlias = Literal["local", "lva", "unix_socket"]
+
+
+@dataclass(frozen=True)
+class DaemonInfo:
+    protocol_version: int
+    capabilities: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class HardwareHealth:
+    status: str
+    dac: bool
+    xmos: bool
+    led_ring: bool = False
+
+
+@dataclass(frozen=True)
+class PowerContract:
+    voltage: float
+    current: float
+
+
+@dataclass(frozen=True)
+class EnvironmentReadings:
+    """Latest readings from the optional environmental sensors."""
+
+    temperature_c: float | None
+    humidity_percent: float | None
+    illuminance_lux: float | None
+
+
+@dataclass(frozen=True)
+class XmosStatus:
+    device_status: int
+    gpio_port_a: int
+    gpio_port_b: int
+
+
+@dataclass(frozen=True)
+class ButtonPressed:
+    name: Literal["volume_up", "volume_down", "action"]
+
+
+@dataclass(frozen=True)
+class MicMuteChanged:
+    muted: bool
+
+
+@dataclass(frozen=True)
+class LvaMicSoftwareMuteChanged:
+    muted: bool
+
+
+@dataclass(frozen=True)
+class LvaConnectionChanged:
+    connected: bool
+
+
+@dataclass(frozen=True)
+class LvaTimerChanged:
+    timer_id: str
+    name: str
+    total_seconds: int
+    seconds_left: int
+    ringing: bool
+
+
+VoicePipelineState: TypeAlias = Literal[
+    "idle", "wake_word_detected", "listening", "thinking", "tts_speaking", "error"
+]
+
+
+@dataclass(frozen=True)
+class VoicePipelineStateChanged:
+    state: VoicePipelineState
+
+
+@dataclass(frozen=True)
+class OutputMuteChanged:
+    output: Literal["line-out", "speaker"]
+    muted: bool
+    volume: float
+    source: AudioChangeSource
+
+
+@dataclass(frozen=True)
+class SpeakerMuteChanged:
+    muted: bool
+
+
+@dataclass(frozen=True)
+class VolumeChanged:
+    output: Literal["line-out", "speaker"]
+    volume: float
+    source: AudioChangeSource
+
+
+@dataclass(frozen=True)
+class LineOutJackChanged:
+    plugged_in: bool
+
+
+@dataclass(frozen=True)
+class XmosAvailabilityChanged:
+    available: bool
+
+
+Satellite1Event: TypeAlias = (
+    ButtonPressed
+    | MicMuteChanged
+    | LvaMicSoftwareMuteChanged
+    | LvaConnectionChanged
+    | LvaTimerChanged
+    | VoicePipelineStateChanged
+    | OutputMuteChanged
+    | SpeakerMuteChanged
+    | VolumeChanged
+    | LineOutJackChanged
+    | XmosAvailabilityChanged
+)

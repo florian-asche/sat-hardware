@@ -1,0 +1,22 @@
+[Unit]
+Description=Satellite1 hardware daemon
+After=sound.target
+
+[Service]
+Type=simple
+User=satellite1d
+Group=satellite1
+SupplementaryGroups=gpio i2c spi
+RuntimeDirectory=satellite1
+RuntimeDirectoryMode=0750
+StateDirectory=satellite1
+StateDirectoryMode=0750
+ExecStartPre=/usr/bin/test -c /dev/i2c-1
+ExecStart=/opt/satellite1/venv/bin/sat-hardware-agent
+Restart=on-failure
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
