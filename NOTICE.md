@@ -26,5 +26,13 @@ git history of this repository.
 - Apache-2.0 files keep their original license and notices when copied; the
   combined work is distributed under GPL-3.0.
 
+## Files copied or adapted from Apache-2.0 sources
+
+| File | Origin |
+|---|---|
+| `.github/workflows/pr-labels.yaml` | linux-voice-assistant `.github/workflows/pr-labels.yaml` |
+| `.github/release.yml` | linux-voice-assistant `.github/release.yml` |
+| `.github/PULL_REQUEST_TEMPLATE.md` | adapted from linux-voice-assistant |
+
 Exact commit hashes of each import are also recorded in the commit messages of
 the import pull requests.
