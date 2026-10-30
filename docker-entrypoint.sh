@@ -25,7 +25,7 @@ if [ "$#" -eq 0 ]; then
   # First start: seed the config volume with the documented default configuration.
   if [ ! -f "$CONFIG_FILE" ]; then
     echo "entrypoint: $CONFIG_FILE not found, writing the default configuration" >&2
-    cp /app/default-satellite1.conf "$CONFIG_FILE"
+    cp /etc/satellite1.conf "$CONFIG_FILE"
   fi
   # shellcheck disable=SC2086
   exec sat-hardware-agent $ARGS

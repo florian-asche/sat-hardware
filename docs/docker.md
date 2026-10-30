@@ -62,13 +62,30 @@ docker compose exec sat-hardware-agent sat1 environment
 
 ## Image contents
 
-Multi-stage build on `python:3.13-slim-trixie`: dependencies are installed from `uv.lock`
-(hash-checked), then the project. Runtime packages: `libgpiod3`, `flashrom`, `ca-certificates`.
-Healthcheck: connect to the control socket. The image carries the OCI source label
-(`org.opencontainers.image.source`) pointing to this repository, which is the GPL source offer.
+The image is built **from the Debian package**, so the container, the Raspberry Pi install and the
+release artifact are the same thing:
+
+1. Stage `deb` (`debian:trixie`): builds `satellite1-rpi-sdk_<version>_<arch>.deb` with
+   `dpkg-buildpackage` from `debian/` (wheelhouse resolved from `uv.lock`, hash-checked).
+2. Final stage (`debian:trixie-slim`): installs that `.deb` with `apt`. The package's postinst
+   creates `/opt/satellite1/venv` from the shipped wheels and links `sat-hardware-agent`, `sat1`, ...;
+   apt pulls the package dependencies (`python3-venv`, `flashrom`, `libgpiod3`).
+
+The service user `satellite1d` is created beforehand with UID/GID 1000; systemd/udev steps of the
+postinst are skipped automatically because they do not exist in the container.
+Healthcheck: connect to the control socket. The OCI source label
+(`org.opencontainers.image.source`) points to this repository, which is the GPL source offer.
+
+The build runs natively per architecture (amd64, arm64). To get only the package:
+
+```
+docker build --target deb -t sat-hardware-agent:deb .
+docker run --rm sat-hardware-agent:deb ls /out        # then docker cp ... out/
+# or with buildx:  docker buildx build --target deb-export --output type=local,dest=out .
+```
 
 ## Limitations
 
-- Built and smoke-tested on amd64 (starts, CLI works, fails cleanly without GPIO hardware). Running
+- Built and smoke-tested on amd64 (package builds, installs in the image, CLI works, fails cleanly without GPIO hardware). Running
   on a Raspberry Pi with a Satellite1 HAT is **not verified yet**; multi-arch (arm64) builds come with CI in PR 3.
 - Firmware flashing from the container needs `flashrom` access to the same SPI device; untested.
