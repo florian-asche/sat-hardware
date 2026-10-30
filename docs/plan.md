@@ -112,8 +112,8 @@ Jeder Punkt = ein Branch = ein PR gegen `main`; Conventional-Commits-Titel; Doku
 
 **Schritt 0 (kein PR) – Checkout:** `git clone https://github.com/florian-asche/sat-hardware` nach `/home/florian/repos/SAT-Hardware` (dort liegt bisher nur `PLAN.md`; ich verschiebe sie in den Clone und lege sie als `docs/plan.md` ab). Upstream-Klone (SDK, LVA) nur im Scratch-Verzeichnis.
 
-### PR 0 – Repo-Grundlage + Plan
-`LICENSE` (GPL-3.0), `NOTICE.md` (Herkunft beider Upstreams mit URL + Commit-Hash), `docs/licensing.md` (Audit aus Abschnitt 1, inkl. Datei-Header-Prüfung), `.gitignore`, `README.md`, `docs/plan.md`.
+### PR 0 – Repo-Grundlage + Plan + Labels/PR-Template
+`LICENSE` (GPL-3.0), `NOTICE.md` (Herkunft beider Upstreams mit URL + Commit-Hash), `docs/licensing.md` (Audit aus Abschnitt 1, inkl. Datei-Header-Prüfung), `.gitignore`, `README.md`, `docs/plan.md`. Zusätzlich (nach LVA-Vorbild): `.github/PULL_REQUEST_TEMPLATE.md` (Typ-Checkbox, Behavior-/Doku-Checkliste), `.github/workflows/pr-labels.yaml` (setzt das Label aus der angekreuzten Typ-Checkbox, schlägt fehl bei 0 oder >1 Häkchen), `.github/release.yml` (Release-Notes-Kategorien nach Label) und die dafür nötigen Repo-Labels.
 
 ### PR 1 – Daemon-Import (weitgehend unverändert)
 Umfang: der komplette Upstream-Daemon laut Abschnitt 4 (inkl. Debian-Packaging), zuerst als reine Kopie (Upstream-Commit-Hash in der Commit-Message), danach minimale Anpassungen (Umbenennung auf `sat_hardware_agent`, Pfade/Config-Name). `pyproject.toml`, `uv.lock`, Tests. Docs: `docs/code-structure.md`, `docs/architecture.md` (Ist-Zustand), `docs/behavior.md` (Ist-Verhalten LEDs/Tasten/MQTT/LVA, aus dem Code abgeleitet), `docs/api/lva.md`, `docs/api/mqtt.md`, `docs/api/unix-socket.md`. Check: Tests laufen, Daemon startet im Mock-Modus.
@@ -125,7 +125,7 @@ Umfang: der komplette Upstream-Daemon laut Abschnitt 4 (inkl. Debian-Packaging),
 GitHub Actions nach LVA-Vorbild (Lint, Tests, Docker multi-arch arm64/amd64 → GHCR, Release bei Tag; zusätzlich .deb-Build für arm64 als Release-Artefakt), `CHANGELOG.md` (Keep a Changelog + SemVer), `version.txt`, `docs/release.md`. Voraussetzung: Packages-Schreibrechte im Repo (von dir freizuschalten).
 
 ### PR 4 – KI-Regeln & Entwicklungs-Workflow
-`AGENTS.md`, `CLAUDE.md` (verweist auf AGENTS.md), `CONTRIBUTING.md`, PR-Template; Regeln: Struktur, Build/Test-Befehle, Stil, „Doku mitpflegen", `behavior.md` ist normativ, ein Thema pro PR, Lizenz-Header, **Doku-Pflicht je PR** (`code-structure.md`, `behavior.md`, `docs/api/`), PR-Template mit Doku-Checkliste. Optional `.kilo/` falls gewünscht.
+`AGENTS.md`, `CLAUDE.md` (verweist auf AGENTS.md), `CONTRIBUTING.md`, PR-Template; Regeln: Struktur, Build/Test-Befehle, Stil, „Doku mitpflegen", `behavior.md` ist normativ, ein Thema pro PR, Lizenz-Header, **Doku-Pflicht je PR** (`code-structure.md`, `behavior.md`, `docs/api/`), PR-Template mit Doku-Checkliste (Template selbst kommt bereits in PR 0). Optional `.kilo/` falls gewünscht.
 
 ### PR 5 – Controller, Pattern-Modul + Plugin-System (Refactoring)
 Zentrale Vorgabe: Es gibt **einen Controller**, der das gesamte Verhalten steuert. Je nach konfigurierter Hardware werden **Plugins geladen**, die der Controller steuert. Plugins enthalten keine Logik zu Zuständen oder Farben, nur Hardwarezugriff.
