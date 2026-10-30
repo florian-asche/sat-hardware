@@ -1,0 +1,102 @@
+# Three chained stages:
+#   1. build-deb:  build the Debian package per architecture (artifact: dist/*.deb)
+#   2. docker:     take that .deb and install it into the runtime image (Dockerfile)
+#   3. manifest:   combine the per-architecture images into one multi-arch tag
+# The image contains exactly the package that is built in stage 1.
+#
+# Runner tags: the defaults are the GitLab.com SaaS Linux runners. Override AMD64_TAG / ARM64_TAG
+# for self-hosted runners (a native runner per architecture is required).
+
+stages:
+  - build
+  - image
+  - manifest
+
+variables:
+  AMD64_TAG: saas-linux-small-amd64
+  ARM64_TAG: saas-linux-small-arm64
+  IMAGE: $CI_REGISTRY_IMAGE
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+# --- 1. Debian package ---------------------------------------------------------------------
+.build-deb:
+  stage: build
+  image: debian:trixie
+  script:
+    - script/build-deb
+  artifacts:
+    name: "deb-$ARCH"
+    paths:
+      - dist/*.deb
+    expire_in: 3 months
+
+build-deb:amd64:
+  extends: .build-deb
+  tags: [$AMD64_TAG]
+  variables:
+    ARCH: amd64
+
+build-deb:arm64:
+  extends: .build-deb
+  tags: [$ARM64_TAG]
+  variables:
+    ARCH: arm64
+
+# --- 2. Image that installs the package from stage 1 ------------------------------------------
+# Image tag: the git tag for tag pipelines, otherwise the branch slug.
+.image:
+  stage: image
+  image: docker:27
+  services:
+    - docker:27-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - export VERSION="${CI_COMMIT_TAG:-$CI_COMMIT_REF_SLUG}"
+  script:
+    # dist/ holds only this architecture's .deb (artifact of the matching build-deb job).
+    - ls -l dist
+    - docker build --pull -t "$IMAGE:$VERSION-$ARCH" .
+    - docker run --rm "$IMAGE:$VERSION-$ARCH" sat-hardware-agent --help
+    - docker run --rm "$IMAGE:$VERSION-$ARCH" sat1 --help
+    - docker push "$IMAGE:$VERSION-$ARCH"
+
+docker:amd64:
+  extends: .image
+  tags: [$AMD64_TAG]
+  needs: ["build-deb:amd64"]
+  variables:
+    ARCH: amd64
+
+docker:arm64:
+  extends: .image
+  tags: [$ARM64_TAG]
+  needs: ["build-deb:arm64"]
+  variables:
+    ARCH: arm64
+
+# --- 3. Multi-arch manifest ---------------------------------------------------------------
+manifest:
+  stage: manifest
+  image: docker:27
+  services:
+    - docker:27-dind
+  tags: [$AMD64_TAG]
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  needs: ["docker:amd64", "docker:arm64"]
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - export VERSION="${CI_COMMIT_TAG:-$CI_COMMIT_REF_SLUG}"
+  script:
+    - TAGS="-t $IMAGE:$VERSION"
+    - if [ -n "$CI_COMMIT_TAG" ]; then TAGS="$TAGS -t $IMAGE:latest"; fi
+    - docker buildx imagetools create $TAGS "$IMAGE:$VERSION-amd64" "$IMAGE:$VERSION-arm64"

@@ -1,3 +1,4 @@
 debian/.wheelhouse/*.whl    usr/share/satellite1/wheels/
 etc/satellite1.conf etc/
 udev/60-satellite1-buttons.rules usr/lib/udev/rules.d/
+script/sat-hardware-agent-entrypoint usr/bin/

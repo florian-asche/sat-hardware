@@ -16,7 +16,7 @@ BUILD_VENV   := $(CURDIR)/debian/.build-venv
 WHEELHOUSE   := $(CURDIR)/debian/.wheelhouse
 VERIFY_VENV  := $(CURDIR)/debian/.verify-venv
 LOCKED_REQUIREMENTS := $(CURDIR)/debian/.daemon-requirements.txt
-PRJ_ROOT     := /project
+PRJ_ROOT     := $(CURDIR)
 TARGET_PYTHON := /usr/bin/python3
 
 # If you add 'dh-sequence-python3' to Build-Depends, you can drop '--with python3'.
