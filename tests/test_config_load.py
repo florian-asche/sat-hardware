@@ -8,10 +8,10 @@ from typing import ClassVar, Literal
 import pytest
 from pydantic import BaseModel, ConfigDict, Field
 
-from satellite1d.config import load_daemon_config
+from sat_hardware_agent.config import load_daemon_config
 
 # Import the generic loader
-from satellite1d.config_load import load_from_toml
+from sat_hardware_agent.config_load import load_from_toml
 
 
 class DummyConfig(BaseModel):

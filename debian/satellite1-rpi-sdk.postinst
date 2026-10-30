@@ -74,7 +74,7 @@ case "$1" in
 esac
 
 BIN_DIR=/usr/bin
-WRAPPERS="sat1 sat1-dac sat1-speaker sat1-lineout sat1-xmos satellite1d"
+WRAPPERS="sat1 sat1-dac sat1-speaker sat1-lineout sat1-xmos sat-hardware-agent"
 
 ensure_wrapper() {
   name="$1"
@@ -97,8 +97,8 @@ ensure_wrapper() {
       sat1-xmos)
         MODULE="satellite1_cli.cli_xmos"
         ;;
-      satellite1d)
-        MODULE="satellite1d.main"
+      sat-hardware-agent)
+        MODULE="sat_hardware_agent.main"
         ;;
       *)
         MODULE=""

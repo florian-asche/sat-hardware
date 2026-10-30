@@ -45,7 +45,7 @@ override_dh_auto_build-arch:
 	$(TARGET_PYTHON) -m venv $(VERIFY_VENV)
 	$(VERIFY_VENV)/bin/pip install --no-index --only-binary=:all: --find-links=$(WHEELHOUSE) 'satellite1-rpi[daemon]'
 	$(VERIFY_VENV)/bin/pip check
-	$(VERIFY_VENV)/bin/satellite1d --help >/dev/null
+	$(VERIFY_VENV)/bin/sat-hardware-agent --help >/dev/null
 	rm -rf $(VERIFY_VENV) $(LOCKED_REQUIREMENTS)
 
 override_dh_auto_install-arch:

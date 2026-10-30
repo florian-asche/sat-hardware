@@ -4,6 +4,28 @@ from uuid import uuid4
 
 import pytest
 
+from sat_hardware_agent.adapters.unix_socket import UnixSocketAdapter
+from sat_hardware_agent.contracts.events import (
+    ButtonPressed,
+    MicMuteChanged,
+    OutputMuteChanged,
+)
+from sat_hardware_agent.contracts.events import (
+    LvaConnectionChanged as DaemonLvaConnectionChanged,
+)
+from sat_hardware_agent.contracts.events import (
+    LvaMicSoftwareMuteChanged as DaemonLvaMicSoftwareMuteChanged,
+)
+from sat_hardware_agent.contracts.events import (
+    LvaTimerChanged as DaemonLvaTimerChanged,
+)
+from sat_hardware_agent.contracts.events import (
+    VolumeChanged as DaemonVolumeChanged,
+)
+from sat_hardware_agent.contracts.events import (
+    XmosAvailabilityChanged as DaemonXmosAvailabilityChanged,
+)
+from sat_hardware_agent.events import EventHub
 from satellite1 import (
     AsyncSatellite1Client,
     LvaConnectionChanged,
@@ -15,28 +37,6 @@ from satellite1 import (
     VolumeChanged,
     XmosAvailabilityChanged,
 )
-from satellite1d.adapters.unix_socket import UnixSocketAdapter
-from satellite1d.contracts.events import (
-    ButtonPressed,
-    MicMuteChanged,
-    OutputMuteChanged,
-)
-from satellite1d.contracts.events import (
-    LvaConnectionChanged as DaemonLvaConnectionChanged,
-)
-from satellite1d.contracts.events import (
-    LvaMicSoftwareMuteChanged as DaemonLvaMicSoftwareMuteChanged,
-)
-from satellite1d.contracts.events import (
-    LvaTimerChanged as DaemonLvaTimerChanged,
-)
-from satellite1d.contracts.events import (
-    VolumeChanged as DaemonVolumeChanged,
-)
-from satellite1d.contracts.events import (
-    XmosAvailabilityChanged as DaemonXmosAvailabilityChanged,
-)
-from satellite1d.events import EventHub
 
 
 def _socket_path() -> Path:

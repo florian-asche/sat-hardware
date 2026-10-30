@@ -27,7 +27,7 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["satellite1", "satellite1.*", "satellite1_cli", "satellite1_cli.*", "satellite1_hw", "satellite1_hw.*", "satellite1d", "satellite1d.*"]
+include = ["satellite1", "satellite1.*", "satellite1_cli", "satellite1_cli.*", "satellite1_hw", "satellite1_hw.*", "sat_hardware_agent", "sat_hardware_agent.*"]
 
 [project.scripts]
 sat1 = "satellite1_cli.cli_sat1:main"
@@ -35,7 +35,7 @@ sat1-dac = "satellite1_cli.cli_dac:main"
 sat1-speaker = "satellite1_cli.cli_dac:speaker"
 sat1-lineout = "satellite1_cli.cli_dac:lineout"
 sat1-xmos = "satellite1_cli.cli_xmos:xmos_main"
-satellite1d = "satellite1d.main:main"
+sat-hardware-agent = "sat_hardware_agent.main:main"
 
 [tool.setuptools_scm]
 version_scheme = "guess-next-dev"
@@ -55,10 +55,10 @@ extend-exclude = ["third_party", "tests/test_components", "tests/test_xmos.py"]
 select = ["E", "F", "I", "B", "UP"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["satellite1", "satellite1_cli", "satellite1_hw", "satellite1d"]
+known-first-party = ["satellite1", "satellite1_cli", "satellite1_hw", "sat_hardware_agent"]
 
 [tool.mypy]
-files = ["src/satellite1", "src/satellite1_cli", "src/satellite1d"]
+files = ["src/satellite1", "src/satellite1_cli", "src/sat_hardware_agent"]
 check_untyped_defs = true
 disallow_incomplete_defs = true
 disallow_untyped_defs = true
