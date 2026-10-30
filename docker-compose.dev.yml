@@ -1,0 +1,11 @@
+# Development override: build the image locally.
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+services:
+  sat-hardware-agent:
+    build:
+      context: .
+      args:
+        VERSION: 0.0.0.dev0
+    image: sat-hardware-agent:local
+    environment:
+      LOG_VERBOSITY: ${LOG_VERBOSITY:-2}
