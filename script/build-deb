@@ -1,0 +1,24 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+# Build the Debian package for the architecture this runs on and copy it to ./dist.
+# Intended to run as root in a debian:trixie container (CI job or `docker run`), e.g.:
+#   docker run --rm -v "$PWD":/src -w /src debian:trixie script/build-deb
+set -eu
+
+export DEBIAN_FRONTEND=noninteractive
+
+# Build-Depends of debian/control plus what debian/rules needs to build the wheelhouse
+# (spidev/evdev are compiled, hence build-essential and python3-dev).
+apt-get update
+apt-get install --yes --no-install-recommends \
+    build-essential debhelper dh-python devscripts fakeroot \
+    python3-all python3-dev python3-venv python3-pip \
+    python3-setuptools python3-setuptools-scm python3-wheel \
+    ca-certificates
+
+dpkg-buildpackage --build=any --no-sign
+
+# dpkg-buildpackage writes the package next to the source directory.
+mkdir -p dist
+cp ../satellite1-rpi-sdk_*.deb dist/
+ls -l dist

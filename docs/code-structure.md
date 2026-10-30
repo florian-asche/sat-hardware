@@ -16,6 +16,10 @@ src/
 tests/                  pytest (daemon, client, CLI, components)
 etc/satellite1.conf     default TOML configuration
 udev/                   udev rules for HAT buttons
+Dockerfile, docker-entrypoint.sh, docker-compose*.yml, .env.example
+                        runtime image (only installs dist/*.deb) and compose files (docs/docker.md)
+script/build-deb        builds the .deb into dist/ (CI and local); script/sat-hardware-agent-entrypoint ships in the .deb
+.github/workflows/build.yml  build-deb -> docker image -> multi-arch manifest (GHCR)
 debian/                 Debian package (systemd unit, postinst, wheelhouse build)
 docker/, Makefile       .deb build in an arm64 container
 examples/               small client examples (LED animations, event listener)

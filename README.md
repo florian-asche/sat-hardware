@@ -11,8 +11,18 @@ Status: work in progress. See [docs/plan.md](docs/plan.md).
 - [docs/code-structure.md](docs/code-structure.md) – layout and where to change what
 - [docs/architecture.md](docs/architecture.md) – components and data flow
 - [docs/behavior.md](docs/behavior.md) – LED states, buttons, entities
+- [docs/docker.md](docs/docker.md) – container image and compose
 - [docs/api/](docs/api) – LVA, MQTT and Unix-socket interfaces
 - [docs/plan.md](docs/plan.md) – roadmap
+
+## Quick start (Docker)
+
+```
+cp .env.example .env && mkdir -p config && sudo chown 1000:1000 config
+docker compose up -d
+```
+
+See [docs/docker.md](docs/docker.md) (device groups, configuration, limitations).
 
 ## Development
 
