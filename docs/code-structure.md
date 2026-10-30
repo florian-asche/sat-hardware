@@ -19,6 +19,8 @@ udev/                   udev rules for HAT buttons
 Dockerfile, docker-entrypoint.sh, docker-compose*.yml, .env.example
                         runtime image (only installs dist/*.deb) and compose files (docs/docker.md)
 script/build-deb        builds the .deb into dist/ (CI and local); script/sat-hardware-agent-entrypoint ships in the .deb
+CHANGELOG.md            release notes; version source is debian/changelog (docs/release.md)
+.github/workflows/    ci.yml (lint, tests), build.yml (package, image, release), pr-labels.yaml
 .github/workflows/build.yml  build-deb -> docker image -> multi-arch manifest (GHCR)
 debian/                 Debian package (systemd unit, postinst, wheelhouse build)
 docker/, Makefile       .deb build in an arm64 container
